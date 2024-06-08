@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>UW Player</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://assets-6.mxplay.com/static/mxoneweb/desktop/images/favicon.png"
+    sizes="128x128">
+    <link rel="stylesheet" href="player.css" />
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+</head>
+
+<body class="light-mode">
+
+    <!-- Header -->
+    <header>
+        <img src="https://i.imgur.com/PgTgdGK.png" alt="Logo">
+        <h3>Video Player</h3>
+        <button class="theme-toggle" onclick="toggleTheme()">⚙️</button>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <center>
+            <div class="nav-tabs">
+                <button onclick="selectTab('mp4')">MP4 Player</button>
+                <button class="active" onclick="selectTab('m3u8')">HLS Player</button>
+                <button onclick="selectTab('mpd')">Dash Player</button>
+            </div>
+
+            <div class="input-container">
+                <input type="text" id="videoUrlInput" placeholder="Enter M3U8 URL" style="color: white;">
+                <button onclick="loadVideo()">▶</button>
+            </div>
+
+            <div id="player-container">
+                <video id="player" controls autoplay></video>
+            </div>
+        </center>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="javascript:void(0)">Home</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li>Email: info@example.com</li>
+                    <li>Phone: +1234567890</li>
+                    <li>Address: 123 Street, City, Country</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Your Website</p>
+        </div>
+    </footer>
+
+
+    <!-- External Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+    <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+    <script>
+        let currentTab = 'm3u8';
+        let currentVideoUrl = '';
+
+        function selectTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.nav-tabs button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelector(`.nav-tabs button[onclick="selectTab('${tab}')"]`).classList.add('active');
+            document.getElementById('videoUrlInput').placeholder = `Enter ${tab.toUpperCase()} URL`;
+
+            // Preserve current video URL when switching tabs
+            currentVideoUrl = document.getElementById('videoUrlInput').value;
+        }
+
+        function loadVideo() {
+            var videoUrl = document.getElementById('videoUrlInput').value;
+            var video = document.getElementById('player');
+            var source = videoUrl || currentVideoUrl; // Use currentVideoUrl if input is empty
+            const defaultOptions = { autoplay: true };
+
+            if (currentTab === 'm3u8' && Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(source);
+                hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
+                    const availableQualities = hls.levels.map(level => level.height);
+                    defaultOptions.controls = [
+                        'play-large',
+                        'play',
+                        'fast-forward',
+                        'progress',
+                        'current-time',
+                        'duration',
+                        'mute',
+                        'volume',
+                        'captions',
+                        'settings',
+                        'pip',
+                        'airplay',
+                        'download',
+                        'fullscreen'
+                    ];
+                    defaultOptions.quality = {
+                        default: availableQualities[0],
+                        options: availableQualities,
+                        forced: true,
+                        onChange: (e) => updateQuality(e)
+                    }
+                    new Plyr(video, defaultOptions);
+                });
+                hls.attachMedia(video);
+                window.hls = hls;
+            } else if (currentTab === 'mpd') {
+                video.src = source;
+                const player = new Plyr(video, defaultOptions);
+                player.source = {
+                    type: 'video',
+                    sources: [
+                        {
+                            src: source,
+                            type: 'application/dash+xml',
+                        },
+                    ],
+                };
+            } else {
+                video.src = source;
+                const player = new Plyr(video, defaultOptions);
+                player.source = {
+                    type: 'video',
+                    sources: [
+                        {
+                            src: source,
+                            type: 'video/mp4',
+                        },
+                    ],
+                };
+            }
+
+            // Update currentVideoUrl with the new video URL
+            currentVideoUrl = source;
+        }
+
+        function updateQuality(newQuality) {
+            window.hls.levels.forEach((level, levelIndex) => {
+                if (level.height === newQuality) {
+                    window.hls.currentLevel = levelIndex;
+                }
+            });
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            body.classList.toggle('light-mode');
+            body.classList.toggle('dark-mode');
+        }
+    </script>
+
+</body>
+
+</html>
