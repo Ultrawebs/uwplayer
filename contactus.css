@@ -59,24 +59,36 @@ body{
     margin-bottom: 20px;
 }
 .contact-inputs{
-    font-family: "Onest", sans-serif;
     width: 400px;
     height: 50px;
     border: none !important;
     outline: none !important;
-    padding-left: 25px;
+    padding-left: 20px;
     font-weight: 500;
     color: #666;
-    border-radius: 10px;
+    border-radius: 05px;
     font-size: 15px;
+}
+.contact-left input{
+    width: 400px;
+    height: 50px;
+    border: none !important;
+    outline: none !important;
+    padding-left: 20px;
+    font-weight: 500;
+    color: #666;
+    border-radius: 05px;
+    font-size: 15px;
+    font-family: "Onest", sans-serif;
 }
 .contact-left textarea {
     height: 200px;
+    width: 400px;
     padding-top: 15px;
-    border-radius: 10px;
+    padding-left: 20px;
+    border-radius: 05px;
     font-family: "Onest", sans-serif;
-    width: 100%; /* Responsive width */
-    max-width: 100%; /* Ensures it doesn't exceed the container's width */
+    resize: vertical; /* Allow only height to be resizable */
     box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
 }
 .contact-inputs:focus{
@@ -116,6 +128,40 @@ body{
 }
 .contact-right img{
     width: 500px;
+}
+@media (max-width: 768px) {
+    .contact-container {
+        display: flex;
+        flex-direction: column; /* Stack elements vertically on mobile */
+        justify-content: space-evenly;
+        align-items: center;
+    }
+    
+    .contact-left {
+        width: 90%; /* Use most of the screen width */
+        gap: 10px;
+    }
+    
+    .contact-right img {
+        width: 90%; /* Adjust image width for better fit */
+    }
+    
+    .contact-left-title h2 {
+        font-size: 32px; /* Adjust font size */
+    }
+    
+    .contact-left-title hr {
+        width: 100%; /* Adjust width */
+    }
+    
+    .contact-inputs, .contact-left input, .contact-left textarea {
+        width: 100%; /* Ensure full width */
+    }
+    
+    .contact-left button {
+        width: 30%; /* Full width button */
+        justify-content: center; /* Center the button content */
+    }
 }
 @media (max-width:800px){
     .contact-inputs{
