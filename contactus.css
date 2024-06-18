@@ -59,6 +59,7 @@ body{
     margin-bottom: 20px;
 }
 .contact-inputs{
+    font-family: "Onest", sans-serif;
     width: 400px;
     height: 50px;
     border: none !important;
