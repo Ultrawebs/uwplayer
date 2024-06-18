@@ -71,10 +71,12 @@ body{
 }
 .contact-left textarea {
     height: 200px;
-    width: 400px; /* Fixed width */
     padding-top: 15px;
     border-radius: 10px;
     font-family: "Onest", sans-serif;
+    width: 100%; /* Responsive width */
+    max-width: 100%; /* Ensures it doesn't exceed the container's width */
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
 }
 .contact-inputs:focus{
     border: 2px solid orange !important;
