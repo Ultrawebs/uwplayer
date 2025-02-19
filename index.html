@@ -102,31 +102,31 @@
             if (currentTab === 'm3u8' && Hls.isSupported()) {
                 const hls = new Hls();
                 hls.loadSource(source);
-                hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-                    const availableQualities = hls.levels.map(level => level.height);
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    const availableQualities = hls.levels.map((level, index) => ({
+                        label: level.height + 'p',
+                        value: index
+                    }));
+                    availableQualities.unshift({ label: 'Auto', value: -1 }); // Add auto option
+                    
                     defaultOptions.controls = [
-                        'play-large',
-                        'play',
-                        'fast-forward',
-                        'progress',
-                        'current-time',
-                        'duration',
-                        'mute',
-                        'volume',
-                        'captions',
-                        'settings',
-                        'pip',
-                        'airplay',
-                        'download',
-                        'fullscreen'
+                        'play-large', 'play', 'fast-forward', 'progress', 'current-time',
+                        'duration', 'mute', 'volume', 'captions', 'settings', 'pip', 'airplay',
+                        'download', 'fullscreen'
                     ];
                     defaultOptions.quality = {
-                        default: availableQualities[0],
-                        options: availableQualities,
+                        default: -1,
+                        options: availableQualities.map(q => q.label),
                         forced: true,
-                        onChange: (e) => updateQuality(e)
-                    }
-                    new Plyr(video, defaultOptions);
+                        onChange: (qualityLabel) => {
+                            const selectedQuality = availableQualities.find(q => q.label === qualityLabel);
+                            if (selectedQuality) {
+                                hls.currentLevel = selectedQuality.value;
+                            }
+                        }
+                    };
+                    
+                    const player = new Plyr(video, defaultOptions);
                 });
                 hls.attachMedia(video);
                 window.hls = hls;
